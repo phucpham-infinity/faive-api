@@ -25,15 +25,9 @@ export default catchAsync(async (req, res, next) => {
   const user = req.user._id
   const url = decodeURIComponent(req.body.url)
 
-  console.log('url', url)
-
   // Scrape product data
   let productData = await scrapePage(htmlFile, url)
-  console.log('url', url)
-
   Log.info(`PRODUCT DATA: ${JSON.stringify(productData)}`, 'scraper-log')
-
-  console.log('DATA ', productData)
 
   // If don't scrap product data then return error message
   if (productData.name === null || productData.name === '')
