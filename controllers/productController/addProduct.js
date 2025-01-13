@@ -1,12 +1,10 @@
+import {body} from 'express-validator'
+
 import Site from '../../models/site.js'
 import Product from '../../models/product.js'
 import User from '../../models/user.js'
-import readFile from '../../helpers/readFile.js'
-import UrlParser from '../../utils/urlParser.js'
 import catchAsync from '../../utils/catchAsync.js'
-import scrapePage from '../../helpers/scrapePage.js'
-import Log from '../../helpers/Log.js'
-import AppError from '../../utils/apiError.js'
+import UrlParser from "../../utils/urlParser.js";
 
 /**
  * Add new product request
@@ -16,53 +14,75 @@ import AppError from '../../utils/apiError.js'
  * @returns {Promise<void>}
  */
 
-export default catchAsync(async (req, res, next) => {
-  // Reading html from uploaded file
- 
-  const user = req.user._id
-  const {title, productId, url} = req.body
-  const  productData ={}
+const validateProductInput = [
+    body('name').isString().notEmpty(),
+    body('productId').isString().notEmpty(),
+    body('url').notEmpty().isURL(),
+]
 
+export default [
+    validateProductInput,
+    catchAsync(async (req, res, next) => {
 
-  /**
-   * if product is already saved, then update the product with new data.
-   * before attaching to a site. And if site is not already saved,
-   * then create the site also.
-   */
+        const user = req.user._id
+        const {name, productId} = req.body
+        const url = decodeURIComponent(req.body.url)
 
-  const site = await Site.findOne({ url })
+        const productData = {
+            name,
+            url
+        }
 
-  let product = await Product.findOneAndUpdate(
-    { productId },
-    {
-      ...productData,
-      user,
-      site: site._id,
-      url,
-      updatedAt: Date.now(),
-    },
-    {
-      new: true,
-      upsert: true,
-      includeResultMetadata: true,
-    }
-  )
+        /**
+         * if product is already saved, then update the product with new data.
+         * before attaching to a site. And if site is not already saved,
+         * then create the site also.
+         */
 
-  const productCount = await Product.countDocuments({ user })
+        const urlObj = UrlParser.make(url, productData)
+        const rootUrl = urlObj.getRootUrl()
+        let site = await Site.findOne({url: rootUrl})
 
-  await User.findOneAndUpdate(
-    {
-      _id: user,
-    },
-    {
-      productCount,
-      hasEverAddedProduct: true
-    }
-  )
+        if (!site) {
+            site = await Site.create({
+                url: rootUrl,
+                name: productData.site_name,
+                icon: `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${rootUrl}&size=128`,
+            })
+        }
 
-  res.status(200).json({
-    status: 'success',
-    action: !product?.lastErrorObject?.updatedExisting ? 'created' : 'updated',
-    product: product.value,
-  })
-})
+        let product = await Product.findOneAndUpdate(
+            {productId},
+            {
+                ...productData,
+                user,
+                site: site._id,
+                url,
+                updatedAt: Date.now(),
+            },
+            {
+                new: true,
+                upsert: true,
+                includeResultMetadata: true,
+            }
+        )
+
+        const productCount = await Product.countDocuments({user})
+
+        await User.findOneAndUpdate(
+            {
+                _id: user,
+            },
+            {
+                productCount,
+                hasEverAddedProduct: true
+            }
+        )
+
+        res.status(200).json({
+            status: 'success',
+            action: !product?.lastErrorObject?.updatedExisting ? 'created' : 'updated',
+            product: product.value,
+        })
+    })
+]
