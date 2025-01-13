@@ -3,6 +3,7 @@ import express from 'express'
 import uploadFile from '../utils/uploadFile.js'
 import isLoggedin from '../middlewares/isLoggedin.js'
 import addProduct from '../controllers/productController/addProduct.js'
+import crawlAndAddProduct from '../controllers/productController/crawlAndAddProduct.js'
 import crawlProduct from '../controllers/productController/crawlProduct.js'
 
 import deleteProduct from '../controllers/productController/deleteProduct.js'
@@ -17,10 +18,17 @@ const router = express.Router()
 
 router.use(isLoggedin)
 
-// Create product
-router.post('/', uploadFile, addProduct)
+// Crawl and Create product
+router.post('/', uploadFile, crawlAndAddProduct)
 
+// Add a product
+router.post('/add', addProduct)
+
+// Crawl a product data
 router.post('/crawl', crawlProduct)
+
+// Pin a product
+router.post('/pin', crawlProduct)
 
 // Retrieve product list
 router.get('/', getUserProducts)

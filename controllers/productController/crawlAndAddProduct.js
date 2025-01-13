@@ -18,11 +18,22 @@ import AppError from '../../utils/apiError.js'
 
 export default catchAsync(async (req, res, next) => {
   // Reading html from uploaded file
- 
-  const user = req.user._id
-  const {title, productId, url} = req.body
-  const  productData ={}
+  const htmlFile = req.file?.filename
+    ? readFile(req.file.filename)
+    : req.body?.html
 
+  const user = req.user._id
+  const url = decodeURIComponent(req.body.url)
+
+  // Scrape product data
+  let productData = await scrapePage(htmlFile, url)
+  Log.info(`PRODUCT DATA: ${JSON.stringify(productData)}`, 'scraper-log')
+
+  // If don't scrap product data then return error message
+  if (productData.name === null || productData.name === '')
+    return next(
+      new AppError('Something went wrong! Do not complete this process', 500)
+    )
 
   /**
    * if product is already saved, then update the product with new data.
@@ -30,10 +41,24 @@ export default catchAsync(async (req, res, next) => {
    * then create the site also.
    */
 
-  const site = await Site.findOne({ url })
+  // Getting site root url from product url
+  const urlObj = UrlParser.make(url, productData)
+  const rootUrl = urlObj.getRootUrl()
+
+  productData.image = new URL(productData.image, rootUrl).href
+
+  let site = await Site.findOne({ url: rootUrl })
+
+  if (!site) {
+    site = await Site.create({
+      url: rootUrl,
+      name: productData.site_name,
+      icon: `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${rootUrl}&size=128`,
+    })
+  }
 
   let product = await Product.findOneAndUpdate(
-    { productId },
+    { url },
     {
       ...productData,
       user,
@@ -48,7 +73,21 @@ export default catchAsync(async (req, res, next) => {
     }
   )
 
+  // If new product is created then increase user's product count and setting "hasAddedProduct" flag to true
+  // if (!product?.lastErrorObject?.updatedExisting)
+  //   await User.findOneAndUpdate(
+  //     {
+  //       _id: user,
+  //     },
+  //     {
+  //       $inc: {
+  //         productCount: 1,
+  //       },
+  //       hasEverAddedProduct: true,
+  //     }
+  //   )
   const productCount = await Product.countDocuments({ user })
+  console.log(productCount)
 
   await User.findOneAndUpdate(
     {
