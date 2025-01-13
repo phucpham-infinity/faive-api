@@ -77,6 +77,6 @@ productSchema.pre("save", async function (next) {
     next();
 });
 
-productSchema.index({name: 1, brand: 1, productId: 1}, {unique: true});
+productSchema.index({ productId: 1}, {unique: true});
 
 export default mongoose.model("Product", productSchema);

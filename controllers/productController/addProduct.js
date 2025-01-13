@@ -1,4 +1,5 @@
 import {body} from 'express-validator'
+import md5 from 'md5';
 
 import Site from '../../models/site.js'
 import Product from '../../models/product.js'
@@ -18,7 +19,7 @@ import Brand from "../../models/brand.js";
 
 const validateRequestBody = [
     body('name').isString().notEmpty().withMessage('Please provide a valid name'),
-    body('productId').isString().notEmpty().withMessage('Please provide a valid productId'),
+    body('productId').isString().optional().withMessage('Please provide a valid productId'),
     body('url').notEmpty().isURL().withMessage('Please provide a valid URL'),
     body('siteOrigin').isString().notEmpty().withMessage('Please provide a valid siteOrigin'),
     body('brand').isObject().withMessage('Brand must be an object').optional(),
@@ -91,9 +92,13 @@ export default [
                 })
             }
         }
+        let _productId = productId
+        if (!productId) {
+            _productId = md5(url)?.slice(0, 8);
+        }
 
         let product = await Product.findOneAndUpdate(
-            {productId},
+            {productId: _productId},
             {
                 ...productData,
                 user,
