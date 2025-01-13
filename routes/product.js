@@ -5,6 +5,8 @@ import isLoggedin from '../middlewares/isLoggedin.js'
 import addProduct from '../controllers/productController/addProduct.js'
 import crawlAndAddProduct from '../controllers/productController/crawlAndAddProduct.js'
 import crawlProduct from '../controllers/productController/crawlProduct.js'
+import pinProducts from '../controllers/productController/pinProducts.js'
+import unpinProducts from '../controllers/productController/unpinProducts.js'
 
 import deleteProduct from '../controllers/productController/deleteProduct.js'
 import getOneProducts from '../controllers/productController/getOneProducts.js'
@@ -23,6 +25,12 @@ router.post('/', uploadFile, crawlAndAddProduct)
 
 // Add a product
 router.post('/add', addProduct)
+
+// Pin products
+router.post('/pin', pinProducts)
+
+// Unpin products
+router.post('/unpin', unpinProducts)
 
 // Crawl a product data
 router.post('/crawl', crawlProduct)

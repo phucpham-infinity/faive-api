@@ -59,6 +59,14 @@ const productSchema = new mongoose.Schema(
             ref: "User",
             required: true,
         },
+        pinnedAt: {
+            type: Date,
+            default: null,
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now,
+        },
     },
     {
         timestamps: true,

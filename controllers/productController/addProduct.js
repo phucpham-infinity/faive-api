@@ -92,10 +92,9 @@ export default [
                 })
             }
         }
+
         let _productId = productId
-        if (!productId) {
-            _productId = md5(url)?.slice(0, 8);
-        }
+        if (!_productId) _productId = md5(url)?.slice(0, 8);
 
         let product = await Product.findOneAndUpdate(
             {productId: _productId},
