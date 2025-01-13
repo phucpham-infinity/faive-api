@@ -5,6 +5,8 @@ import Product from '../../models/product.js'
 import User from '../../models/user.js'
 import catchAsync from '../../utils/catchAsync.js'
 import UrlParser from "../../utils/urlParser.js";
+import validateRequest from "../../middlewares/validateRequest.js";
+import Brand from "../../models/brand.js";
 
 /**
  * Add new product request
@@ -14,23 +16,55 @@ import UrlParser from "../../utils/urlParser.js";
  * @returns {Promise<void>}
  */
 
-const validateProductInput = [
-    body('name').isString().notEmpty(),
-    body('productId').isString().notEmpty(),
-    body('url').notEmpty().isURL(),
+const validateRequestBody = [
+    body('name').isString().notEmpty().withMessage('Please provide a valid name'),
+    body('productId').isString().notEmpty().withMessage('Please provide a valid productId'),
+    body('url').notEmpty().isURL().withMessage('Please provide a valid URL'),
+    body('siteOrigin').isString().notEmpty().withMessage('Please provide a valid siteOrigin'),
+    body('brand').isObject().withMessage('Brand must be an object')
+        .custom((value) => {
+            if (!value.name || typeof value.name !== 'string') throw new Error('Brand name is required and must be a string')
+            if (!value.url || typeof value.url !== 'string') throw new Error('Brand url is required and must be a string')
+            return true
+        }),
+    body('price').isNumeric().notEmpty().withMessage('Please provide a valid price'),
+    body('priceCurrency').isString().notEmpty().withMessage('Please provide a valid priceCurrency'),
+    body('previousPrice').isNumeric().optional(),
+    body('discountPercentage').isString().optional(),
+    body('description').isString().optional(),
 ]
 
 export default [
-    validateProductInput,
+    validateRequestBody,
+    validateRequest,
     catchAsync(async (req, res, next) => {
 
         const user = req.user._id
-        const {name, productId} = req.body
+        const {
+            name,
+            productId,
+            siteOrigin,
+            brand,
+            price,
+            priceCurrency,
+            previousPrice,
+            discountPercentage,
+            description,
+            image
+        } = req.body
         const url = decodeURIComponent(req.body.url)
 
         const productData = {
             name,
-            url
+            url,
+            siteOrigin,
+            brand,
+            price,
+            priceCurrency,
+            previousPrice,
+            discountPercentage,
+            description,
+            image,
         }
 
         /**
@@ -41,14 +75,26 @@ export default [
 
         const urlObj = UrlParser.make(url, productData)
         const rootUrl = urlObj.getRootUrl()
-        let site = await Site.findOne({url: rootUrl})
 
-        if (!site) {
-            site = await Site.create({
+        let _site = await Site.findOne({url: rootUrl})
+        if (!_site) {
+            _site = await Site.create({
                 url: rootUrl,
-                name: productData.site_name,
+                name: productData.siteOrigin,
                 icon: `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${rootUrl}&size=128`,
             })
+        }
+
+        let _brand;
+        if (productData.brand) {
+            _brand = await Brand.findOne({name: productData.brand?.name})
+            if (!brand) {
+                _brand = await Brand.create({
+                    name: productData.brand?.name,
+                    url: productData.brand?.url,
+                    icon: productData.brand?.icon,
+                })
+            }
         }
 
         let product = await Product.findOneAndUpdate(
@@ -56,8 +102,8 @@ export default [
             {
                 ...productData,
                 user,
-                site: site._id,
-                url,
+                site: _site?._id,
+                brand: _brand?._id ?? null,
                 updatedAt: Date.now(),
             },
             {
