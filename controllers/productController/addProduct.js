@@ -21,12 +21,7 @@ const validateRequestBody = [
     body('productId').isString().notEmpty().withMessage('Please provide a valid productId'),
     body('url').notEmpty().isURL().withMessage('Please provide a valid URL'),
     body('siteOrigin').isString().notEmpty().withMessage('Please provide a valid siteOrigin'),
-    body('brand').isObject().withMessage('Brand must be an object')
-        .custom((value) => {
-            if (!value.name || typeof value.name !== 'string') throw new Error('Brand name is required and must be a string')
-            if (!value.url || typeof value.url !== 'string') throw new Error('Brand url is required and must be a string')
-            return true
-        }),
+    body('brand').isObject().withMessage('Brand must be an object').optional(),
     body('price').isNumeric().notEmpty().withMessage('Please provide a valid price'),
     body('priceCurrency').isString().notEmpty().withMessage('Please provide a valid priceCurrency'),
     body('previousPrice').isNumeric().optional(),
@@ -88,7 +83,7 @@ export default [
         let _brand;
         if (productData.brand) {
             _brand = await Brand.findOne({name: productData.brand?.name})
-            if (!brand) {
+            if (!_brand) {
                 _brand = await Brand.create({
                     name: productData.brand?.name,
                     url: productData.brand?.url,
@@ -103,7 +98,7 @@ export default [
                 ...productData,
                 user,
                 site: _site?._id,
-                brand: _brand?._id ?? null,
+                brand: _brand?.name ?? null,
                 updatedAt: Date.now(),
             },
             {
