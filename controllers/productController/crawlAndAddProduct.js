@@ -86,8 +86,8 @@ export default catchAsync(async (req, res, next) => {
   //       hasEverAddedProduct: true,
   //     }
   //   )
+
   const productCount = await Product.countDocuments({ user })
-  console.log(productCount)
 
   await User.findOneAndUpdate(
     {

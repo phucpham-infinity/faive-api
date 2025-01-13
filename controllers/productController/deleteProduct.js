@@ -40,7 +40,6 @@ export default catchAsync(async (req, res, next) => {
   // })
 
   const productCount = await Product.countDocuments({ user })
-  console.log(productCount)
 
   await User.findOneAndUpdate({ _id: user }, { productCount })
 

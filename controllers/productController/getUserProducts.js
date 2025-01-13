@@ -49,7 +49,7 @@ export default catchAsync(async (req, res) => {
       sortQuery =
           faivelist_id || exclude_faivelist_id
               ? { 'relations.createdAt': -1, name: 1 }
-              : { pinnedAt: -1, updatedAt: -1, name: 1 };
+              : { sortPinnedAt: 1, updatedAt: -1, name: 1 };
   }
 
   console.log('sortQuery', sortQuery);
@@ -70,6 +70,11 @@ export default catchAsync(async (req, res) => {
       },
     }, // Unwind to process each relation
     { $match: { user: new mongoose.Types.ObjectId(user) } },
+    {
+      $addFields: {
+        sortPinnedAt: { $ifNull: ["$pinnedAt", new Date(3500, 12, 1)] },
+      },
+    }
   ];
 
   // Apply the site_id filter
@@ -136,6 +141,7 @@ export default catchAsync(async (req, res) => {
   pipeline.push({ $replaceRoot: { newRoot: '$document' } }); // Flatten the documents
   pipeline.push({ $sort: sortQuery });
   pipeline.push({ $skip: skip }, { $limit: limit });
+  pipeline.push({ $unset: "sortPinnedAt" });
 
   // Execute the aggregation pipeline
   const products = await Product.aggregate(pipeline);
