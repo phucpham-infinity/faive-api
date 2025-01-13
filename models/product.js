@@ -65,18 +65,6 @@ const productSchema = new mongoose.Schema(
     }
 );
 
-productSchema.pre("save", async function (next) {
-    if (!this.productId && this.url) {
-        try {
-            const hash = await argon2.hash(this.url, {type: argon2.argon2id});
-            this.productId = hash.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8);
-        } catch (err) {
-            return next(err);
-        }
-    }
-    next();
-});
-
 productSchema.index({ productId: 1}, {unique: true});
 
 export default mongoose.model("Product", productSchema);
