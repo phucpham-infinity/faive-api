@@ -39,14 +39,19 @@ class MetaData extends ScrapeParseInterface {
     const priceCurrency =
       $('meta[property="priceCurrency"]').attr('content') ||
       $('meta[name="priceCurrency"]').attr('content')
+    const description =
+        $('meta[property="description"]').attr('content') ||
+        $('meta[name="description"]').attr('content')
     const brand =
       $('meta[property="brand"]').attr('content') ||
       $('meta[name="brand"]').attr('content')
 
+
     // console.log('ICON   ', site_favicon)
 
     return {
-      title,
+      name: title,
+      description,
       image: image || imageUrl || imageSecureUrl,
       site_name,
       // site_favicon: site_favicon ?? 'favicon.ico',

@@ -1,33 +1,19 @@
 import catchAsync from "../../utils/catchAsync.js";
-import {crawlData} from "../../helpers/crawl/superShop/index.js";
-import {body} from "express-validator";
-import validateRequest from "../../middlewares/validateRequest.js";
 
-const validateRequestBody = [
-    body('url').isURL().withMessage('Please provide a valid URL'),
-]
+import scrapePage from "../../helpers/scrapePage.js";
+import readFile from "../../helpers/readFile.js";
 
 export default [
-    validateRequestBody,
-    validateRequest,
     catchAsync(async (req, res, next) => {
-        const user = req.user._id;
+        const htmlFile = req.file?.filename
+            ? readFile(req.file.filename)
+            : req.body?.html
         const url = decodeURIComponent(req.body.url);
-
-        if (url.includes("super-shop.com")) {
-            const data = await crawlData(url);
-            res.status(200).json({
-                status: "success",
-                data,
-            });
-            return;
-        }
+        let productData = await scrapePage(htmlFile, url)
 
         res.status(200).json({
-            status: "success",
-            data: {
-                url,
-            },
-        });
+            status: 'success',
+            data: productData
+        })
     })
 ]

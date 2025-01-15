@@ -29,6 +29,8 @@ export default catchAsync(async (req, res, next) => {
   let productData = await scrapePage(htmlFile, url)
   Log.info(`PRODUCT DATA: ${JSON.stringify(productData)}`, 'scraper-log')
 
+  console.log('productData', productData)
+
   // If don't scrap product data then return error message
   if (productData.name === null || productData.name === '')
     return next(

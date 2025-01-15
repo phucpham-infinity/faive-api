@@ -33,7 +33,7 @@ router.post('/pin', pinProducts)
 router.post('/unpin', unpinProducts)
 
 // Crawl a product data
-router.post('/crawl', crawlProduct)
+router.post('/crawl', uploadFile, crawlProduct)
 
 // Pin a product
 router.post('/pin', crawlProduct)

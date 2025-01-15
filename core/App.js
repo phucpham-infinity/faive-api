@@ -38,8 +38,8 @@ export default class App {
     this.app.use(express.static(config.paths.public))
     this.app.use(cors({ origin: '*' }))
 
-    morgan.token('body', (req) => JSON.stringify(req.body));
-    this.app.use(morgan(':method :url :status :response-time ms - :res[content-length] | Body: :body'))
+    // morgan.token('body', (req) => JSON.stringify(req.body));
+    this.app.use(morgan(':method :url :status :response-time ms - :res[content-length]'))
 
     this.setRoutes()
     this.app.use(globalErrorHandler)

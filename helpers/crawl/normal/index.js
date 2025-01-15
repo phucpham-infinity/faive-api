@@ -1,4 +1,8 @@
-export const crawlData = async (url) => {
+import axios from "axios";
+import * as cheerio from "cheerio";
+
+export const crawlNormalSiteData = async (url) => {
+  let $;
   const initPage = async () => {
     try {
       const { data } = await axios.get(url);

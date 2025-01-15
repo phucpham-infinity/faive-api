@@ -25,8 +25,6 @@ const validateRequestBody = [
     body('brand').isObject().withMessage('Brand must be an object').optional(),
     body('price').isNumeric().notEmpty().withMessage('Please provide a valid price'),
     body('priceCurrency').isString().notEmpty().withMessage('Please provide a valid priceCurrency'),
-    body('previousPrice').isNumeric().optional(),
-    body('discountPercentage').isString().optional(),
     body('description').isString().optional(),
 ]
 
@@ -43,8 +41,6 @@ export default [
             brand,
             price,
             priceCurrency,
-            previousPrice,
-            discountPercentage,
             description,
             image
         } = req.body
@@ -57,8 +53,6 @@ export default [
             brand,
             price,
             priceCurrency,
-            previousPrice,
-            discountPercentage,
             description,
             image,
         }
@@ -81,18 +75,6 @@ export default [
             })
         }
 
-        let _brand;
-        if (productData.brand) {
-            _brand = await Brand.findOne({name: productData.brand?.name})
-            if (!_brand) {
-                _brand = await Brand.create({
-                    name: productData.brand?.name,
-                    url: productData.brand?.url,
-                    icon: productData.brand?.icon,
-                })
-            }
-        }
-
         let _productId = productId
         if (!_productId) _productId = md5(url)?.slice(0, 8);
 
@@ -102,7 +84,6 @@ export default [
                 ...productData,
                 user,
                 site: _site?._id,
-                brand: _brand?.name ?? null,
                 updatedAt: Date.now(),
             },
             {

@@ -21,7 +21,9 @@ const scrapePage = async (html, url) => {
   let product = {
     site_name: null,
     name: null,
+    description: null,
     image: null,
+    gallery: null,
     price: null,
     priceCurrency: null,
     brand: null,
@@ -51,16 +53,12 @@ const scrapePage = async (html, url) => {
     Log.info(`PRODUCT: \n${JSON.stringify(product)}`, 'scraper-log')
   }
 
-  // console.log('Product\n', product)
-
   // Get site name from product url
   if (!(product.site_name ?? false)) {
     const urlObj = new URL(url)
     product.site_name = filterHostName(urlObj.hostname ?? null)
   }
   Log.info(`SITE NAME: ${product.site_name}`, 'scraper-log')
-
-  // console.log('Product Data', product)
 
   return product
 }

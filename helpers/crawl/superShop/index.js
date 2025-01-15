@@ -2,7 +2,7 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import * as common from "../../../utils/crawl.js";
 
-export const crawlData = async (url) => {
+export const crawlSuperShopData = async (url) => {
     let $;
 
     const crawlProductGalleryImages = () => {
