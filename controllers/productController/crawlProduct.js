@@ -16,6 +16,7 @@ export default [
             data: {
                 ...productData,
                 url,
+                gallery: productData.gallery ?? [productData.image],
                 image: [productData.image],
                 site: productData.site_name,
                 user: req.user._id,

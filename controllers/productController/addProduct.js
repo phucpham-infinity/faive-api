@@ -41,7 +41,7 @@ export default [
             price,
             priceCurrency,
             description,
-            image
+            image,
         } = req.body
         const url = decodeURIComponent(req.body.url)
 
@@ -69,7 +69,7 @@ export default [
         if (!_site) {
             _site = await Site.create({
                 url: rootUrl,
-                name: productData.siteOrigin,
+                name: rootUrl,
                 icon: `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${rootUrl}&size=128`,
             })
         }
