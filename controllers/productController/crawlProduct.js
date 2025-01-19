@@ -13,7 +13,15 @@ export default [
 
         res.status(200).json({
             status: 'success',
-            data: productData
+            data: {
+                ...productData,
+                url,
+                image: [productData.image],
+                site: productData.site_name,
+                user: req.user._id,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            }
         })
     })
 ]

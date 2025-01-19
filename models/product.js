@@ -32,15 +32,6 @@ const productSchema = new mongoose.Schema(
             required: true,
             trim: true,
         },
-        previousPrice: {
-            type: Number,
-            required: false,
-            min: 0,
-        },
-        discountPercentage: {
-            type: String,
-            required: false,
-        },
         description: {
             type: String,
             required: false,

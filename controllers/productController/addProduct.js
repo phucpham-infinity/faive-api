@@ -21,11 +21,10 @@ const validateRequestBody = [
     body('name').isString().notEmpty().withMessage('Please provide a valid name'),
     body('productId').isString().optional().withMessage('Please provide a valid productId'),
     body('url').notEmpty().isURL().withMessage('Please provide a valid URL'),
-    body('siteOrigin').isString().notEmpty().withMessage('Please provide a valid siteOrigin'),
-    body('brand').isObject().withMessage('Brand must be an object').optional(),
+    body('brand').isString().withMessage('Brand must be an object').optional(),
     body('price').isNumeric().notEmpty().withMessage('Please provide a valid price'),
     body('priceCurrency').isString().notEmpty().withMessage('Please provide a valid priceCurrency'),
-    body('description').isString().optional(),
+    body('description').optional(),
 ]
 
 export default [
