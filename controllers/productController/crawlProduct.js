@@ -9,14 +9,17 @@ export default [
             ? readFile(req.file.filename)
             : req.body?.html
         const url = decodeURIComponent(req.body.url);
-        let productData = await scrapePage(htmlFile, url)
+        let productData = await scrapePage(htmlFile, url);
 
         res.status(200).json({
             status: 'success',
             data: {
                 ...productData,
                 url,
-                gallery: productData.gallery ?? [productData.image],
+                price: productData.price ?? "",
+                priceCurrency: productData.priceCurrency ?? "",
+                brand: productData.priceCurrency ?? "",
+                gallery: productData.gallery ? [productData.image, ...productData.gallery] : [productData.image],
                 image: [productData.image],
                 site: productData.site_name,
                 user: req.user._id,
