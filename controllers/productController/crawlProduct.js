@@ -2,6 +2,7 @@ import catchAsync from "../../utils/catchAsync.js";
 
 import scrapePage from "../../helpers/scrapePage.js";
 import readFile from "../../helpers/readFile.js";
+import AppError from "../../utils/apiError.js";
 
 export default [
     catchAsync(async (req, res, next) => {
@@ -10,6 +11,10 @@ export default [
             : req.body?.html
         const url = decodeURIComponent(req.body.url);
         let productData = await scrapePage(htmlFile, url);
+
+        if(!productData.price || !productData.name || !productData.priceCurrency || !productData.image ) {
+            throw new AppError("Product not found!");
+        }
 
         res.status(200).json({
             status: 'success',

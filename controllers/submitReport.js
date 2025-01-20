@@ -29,11 +29,8 @@ export default catchAsync(async (req, res, next) => {
       },
     ],
   }
-
   const transport = new NodemailerTransport()
-  const resData = await transport.sendMail(emailOptions)
-
-  console.log(resData)
+  await transport.sendMail(emailOptions)
 
   res.status(200).json({
     status: 'success',

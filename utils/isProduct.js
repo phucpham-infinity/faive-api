@@ -4,12 +4,14 @@ import { stringSimilarity } from 'string-similarity-js'
 
 import getGPTData from '../helpers/getGPTData.js'
 import ScrapeParseInterface from './parseProdectData.js'
+import getGPTIsProduct from "../helpers/getGPTIsProduct.js";
 
-class TextData extends ScrapeParseInterface {
+class IsProduct extends ScrapeParseInterface {
   async getData(html, fields) {
     return await this.parseData(await this.scrapeData(html, fields), fields)
   }
   async scrapeData(html, fields) {
+    // console.log('fields', fields)
     const $ = cheerio.load(html)
 
     const title = $('title').text()
@@ -39,6 +41,8 @@ class TextData extends ScrapeParseInterface {
 
     const body = $('body').html()
 
+    // console.log('Body', body)
+
     // Convert HTML to markdown
     const markdown = NodeHtmlMarkdown.translate(body, {}, undefined, undefined)
     let bodyText = markdown
@@ -48,6 +52,7 @@ class TextData extends ScrapeParseInterface {
       .replaceAll(/[-+_|]+/g, '')
 
     const bodyline = bodyText.split('.')
+    // console.log('bodyText', bodyline)
 
     // Getting only text content of the website
     let max = 0,
@@ -64,6 +69,7 @@ class TextData extends ScrapeParseInterface {
     const end = idx + 50 >= bodyline.length ? bodyline.length : idx + 50
 
     const filterText = bodyline.slice(start, end)
+
     return filterText.join('.')
   }
 
@@ -71,44 +77,9 @@ class TextData extends ScrapeParseInterface {
     if (!data) {
       return {}
     }
-    let query = {}
-    const fieldProp = {
-      site_name: {
-        type: 'string',
-      },
-      name: {
-        type: 'string',
-      },
-      image: {
-        type: 'string',
-      },
-      price: {
-        type: 'number',
-      },
-      priceCurrency: {
-        type: 'string',
-      },
-      brand: {
-        type: 'string',
-      },
-    }
-
-    for (const key of fields) {
-      query[key] = fieldProp[key]
-    }
-
-    const gptData = await getGPTData({ context: data, query, required: fields })
-
-    if (fields.includes('priceCurrency')) {
-      const priceCurrency = this.convertCodeToSymbol(gptData.priceCurrency)
-      return {
-        ...gptData,
-        priceCurrency,
-      }
-    }
-
-    return gptData
+    const gptData = await getGPTIsProduct({ context: data})
+     return {isProduct: gptData}
   }
 }
 
-export default TextData
+export default IsProduct

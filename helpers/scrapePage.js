@@ -5,6 +5,7 @@ import MicroData from '../utils/microData.js'
 import TextData from '../utils/textData.js'
 import Log from './Log.js'
 import filterHostName from './filterHostName.js'
+import AppError from "../utils/apiError.js";
 
 /**
  * Scrapes a webpage to extract product details using various data extraction steps,
@@ -27,13 +28,17 @@ const scrapePage = async (html, url) => {
     price: null,
     priceCurrency: null,
     brand: null,
+    isProduct: null,
   }
 
   for (const Step of steps) {
+    if (product.isProduct === false) {
+      throw new AppError("No products found for product");
+    }
+
     // Create object of each step of scrapper class
     const step = new Step()
     const fields = Object.keys(product).filter((el) => product[el] === null)
-
     if (fields.length === 0) break
 
     const scrappedData = await step.getData(html, fields)
