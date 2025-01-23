@@ -12,7 +12,7 @@ export default [
         const url = decodeURIComponent(req.body.url);
         let productData = await scrapePage(htmlFile, url);
 
-        if(!productData.price || !productData.name || !productData.priceCurrency || !productData.image ) {
+        if(!productData.name) {
             throw new AppError("Product not found!");
         }
 
@@ -21,7 +21,7 @@ export default [
             data: {
                 ...productData,
                 url,
-                price: productData.price ?? "",
+                price: productData.price ,
                 priceCurrency: productData.priceCurrency ?? "",
                 brand: productData.priceCurrency ?? "",
                 gallery: productData.gallery ? [productData.image, ...productData.gallery] : [productData.image],
