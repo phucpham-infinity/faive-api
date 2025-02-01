@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import argon2 from "argon2";
+import {productModelMiddleware} from "./middlewares/product.middleware.js";
 
 const productSchema = new mongoose.Schema(
     {
@@ -65,5 +66,7 @@ const productSchema = new mongoose.Schema(
 );
 
 productSchema.index({ productId: 1}, {unique: true});
+
+productModelMiddleware(productSchema);
 
 export default mongoose.model("Product", productSchema);

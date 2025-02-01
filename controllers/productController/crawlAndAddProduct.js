@@ -33,7 +33,7 @@ export default catchAsync(async (req, res, next) => {
   // If don't scrap product data then return error message
   if (productData.name === null || productData.name === '')
     return next(
-      new AppError('Something went wrong! Do not complete this process', 500)
+      new AppError('Something went wrong! Do not complete this jobs', 500)
     )
 
   /**

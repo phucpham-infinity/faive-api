@@ -66,7 +66,7 @@ export default catchAsync(async (req, res) => {
                 path: '$relations',
                 preserveNullAndEmptyArrays: true,
             },
-        }, // Unwind to process each relation
+        }, // Unwind to jobs each relation
         {$match: {user: new mongoose.Types.ObjectId(user)}},
         {
             $addFields: {

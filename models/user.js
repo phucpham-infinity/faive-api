@@ -1,6 +1,7 @@
 import argon2 from "argon2";
 import mongoose from 'mongoose'
 import config from '../config.js'
+import {userModelMiddleware} from "./middlewares/user.middleware.js";
 
 const userSchema = mongoose.Schema({
   first_name: {
@@ -106,6 +107,6 @@ userSchema.methods.checkPassword = async (password, dbPassword) => {
 
 userSchema.index({ email: 1 }, { unique: true })
 
-// console.log('Indexs ', userSchema.indexes())
+userModelMiddleware(userSchema)
 
 export default mongoose.model('User', userSchema)
