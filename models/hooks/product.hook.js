@@ -1,7 +1,7 @@
 import {meiseSyncMq} from "../../queue/index.js";
 import {MEISE_SYNC_JOBS} from "../../queue/constans.js";
 
-export const productModelMiddleware = (productSchema) => {
+export const productModelHook = (productSchema) => {
     productSchema.post('save', function (doc, next) {
         meiseSyncMq.add(MEISE_SYNC_JOBS.ADD_INDEX_PRODUCT, doc);
         next();

@@ -8,6 +8,8 @@ import updateUserProfile from '../controllers/userController/updateUserProfile.j
 import uploadProfileImage from '../controllers/userController/uploadProfileImage.js'
 import updateProfileStatus from '../controllers/userController/updateProfileStatus.js'
 import uploadCoverImage from '../controllers/userController/uploadCoverImage.js'
+import indexAllUser from '../controllers/userController/indexAllUser.js'
+import searchUser from '../controllers/userController/searchUser.js'
 
 const router = express.Router()
 
@@ -16,6 +18,9 @@ const upload = multer()
 router.use(isLoggedin)
 
 router.get('/get-user', getUser)
+router.get('/index/all', indexAllUser)
+router.get('/search/:key', searchUser)
+
 
 router.put(
   '/profile-url',
