@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import {userProfileModelHook} from "./hooks/userProfile.hook.js";
 
 const userProfileSchema = new mongoose.Schema({
   user: {
@@ -36,4 +37,5 @@ const userProfileSchema = new mongoose.Schema({
   },
 })
 
+userProfileModelHook(userProfileSchema);
 export default mongoose.model('UserProfile', userProfileSchema)

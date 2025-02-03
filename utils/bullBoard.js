@@ -4,13 +4,13 @@ import {BullMQAdapter} from '@bull-board/api/bullMQAdapter.js'
 
 import {meiseSyncMq} from "../queue/index.js";
 import {basicAuth} from "../middlewares/basicAuth.js";
-import {setupMeiseSyncWorker} from "../queue/workers/meiseSync.worker.js";
+import {setupElasticsearchSyncWorker} from "../queue/workers/elasticsearchSync.worker.js";
 
 
 export const setupBullBoard =async (app) => {
     const serverAdapter = new ExpressAdapter()
     serverAdapter.setBasePath('/queues')
-   await setupMeiseSyncWorker()
+   await setupElasticsearchSyncWorker()
     createBullBoard({
         queues: [new BullMQAdapter(meiseSyncMq)],
         serverAdapter: serverAdapter,

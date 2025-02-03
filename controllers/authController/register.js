@@ -29,6 +29,6 @@ export default catchAsync(async (req, res) => {
   // Returning id, email and token
   res.status(201).json({
     status: 'success',
-    data: { _id: user.id, email: user.email, token },
+    data: { _id: user.id, email: user.email, token, profile: userProfile },
   })
 })

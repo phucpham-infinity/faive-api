@@ -19,6 +19,7 @@
     "@bull-board/api": "^6.7.4",
     "@bull-board/express": "^6.7.4",
     "@bull-board/ui": "^6.7.4",
+    "@elastic/elasticsearch": "^8.17.0",
     "argon2": "^0.41.1",
     "axios": "^1.7.9",
     "basic-auth": "^2.0.1",

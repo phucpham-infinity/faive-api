@@ -93,6 +93,11 @@ const config = {
         host: process.env.MEISE_HOST ?? '',
         apiKey: process.env.MEISE_KEY ?? '',
     },
+    elasticsearch: {
+        host: process.env.ELASTICSEACRH_HOST ?? '',
+        port: process.env.ELASTICSEACRH_PORT ?? '',
+        apiKey: process.env.ELASTICSEACRH_APIKEY ?? '',
+    },
     basicAuth:{
         username: process.env.BASIC_USERNAME ?? '',
         password: process.env.BASIC_PASSWORD ?? '',
@@ -100,3 +105,5 @@ const config = {
 }
 
 export default config
+
+
