@@ -8,6 +8,7 @@ import catchAsync from '../../utils/catchAsync.js'
 import UrlParser from "../../utils/urlParser.js";
 import validateRequest from "../../middlewares/validateRequest.js";
 import Brand from "../../models/brand.js";
+import {getMainDomain} from "../../utils/hepler.js";
 
 /**
  * Add new product request
@@ -69,7 +70,7 @@ export default [
         if (!_site) {
             _site = await Site.create({
                 url: rootUrl,
-                name: rootUrl,
+                name: getMainDomain(rootUrl),
                 icon: `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${rootUrl}&size=128`,
             })
         }
