@@ -23,7 +23,7 @@ export default [
                 url,
                 price: productData.price ,
                 priceCurrency: productData.priceCurrency ?? "",
-                brand: productData.priceCurrency ?? "",
+                brand: productData.brand ?? "",
                 gallery: productData.gallery ? [productData.image, ...productData.gallery] : [productData.image],
                 image: [productData.image],
                 site: productData.site_name,
